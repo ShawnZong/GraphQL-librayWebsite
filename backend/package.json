@@ -1,0 +1,16 @@
+{
+  "name": "part8graphqlbackend",
+  "version": "1.0.0",
+  "description": "full stack part8",
+  "main": "library-backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "junsheng tan",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.21.0",
+    "graphql": "^15.5.0",
+    "uuid": "^8.3.2"
+  }
+}
