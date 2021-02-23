@@ -1,10 +1,11 @@
 require("dotenv").config();
 
-const { MONGODB_URL } = process.env;
+const { MONGODB_URL, JWT_SECRET, SALT_ROUNDS } = process.env;
 
-const { SECRET } = process.env;
+// const { JWT_SECRET } = process.env;
 
 module.exports = {
   MONGODB_URL,
-  SECRET,
+  JWT_SECRET,
+  SALT_ROUNDS,
 };
