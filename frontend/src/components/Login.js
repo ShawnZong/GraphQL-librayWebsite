@@ -13,8 +13,9 @@ const Login = (props) => {
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value;
+      console.log("token ", token);
       props.setToken(token);
-      localStorage.setItem("currentUser", token);
+      window.localStorage.setItem("currentUser", token);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result.data]);

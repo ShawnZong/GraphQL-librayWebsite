@@ -10,11 +10,9 @@ import { useApolloClient } from "@apollo/client";
 
 const App = () => {
   const [page, setPage] = useState("authors");
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("currentUser"));
   const client = useApolloClient();
-  // useEffect(() => {
-  //   setToken(JSON.parse(window.localStorage.getItem("currentUser")));
-  // }, []);
+
   const logout = async () => {
     setToken(null);
     localStorage.clear();
