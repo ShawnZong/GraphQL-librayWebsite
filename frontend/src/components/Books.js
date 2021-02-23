@@ -27,17 +27,6 @@ const Books = (props) => {
   }
 
   const books = result.data.allBooks;
-  // if (filterGenre) {
-  //   return (
-  //     <div>
-  //       <h2>books</h2>
-  //       <NavGenres setFilterGenre={setFilterGenre} />
-  //       <p>
-  //         in genre <b>{filterGenre}</b>
-  //       </p>
-  //     </div>
-  //   );
-  // }
   return (
     <div>
       <h2>books</h2>

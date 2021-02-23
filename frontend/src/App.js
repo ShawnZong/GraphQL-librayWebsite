@@ -10,7 +10,7 @@ import RecommendBooks from "./components/RecommendBooks";
 import { useApolloClient } from "@apollo/client";
 
 const App = () => {
-  const [page, setPage] = useState("recommend");
+  const [page, setPage] = useState("authors");
   const [token, setToken] = useState(localStorage.getItem("currentUser"));
   const client = useApolloClient();
 

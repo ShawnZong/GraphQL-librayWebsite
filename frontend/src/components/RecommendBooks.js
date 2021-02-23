@@ -14,14 +14,14 @@ const RecommendBooks = (props) => {
       getBooks({ variables: { genre: user.data.me.favoriteGenre } });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.loading]);
+  }, [user.loading, props.show]);
 
   useEffect(() => {
     if (result.data) {
       setBooks(result.data.allBooks);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result.loading]);
+  }, [result.loading, props.show]);
 
   if (!props.show) {
     return null;
@@ -31,8 +31,6 @@ const RecommendBooks = (props) => {
     return <div>loading...</div>;
   }
 
-  console.log("user", user.data);
-  console.log("result", result.data);
   return (
     <div>
       <h2>Recommendations</h2>
