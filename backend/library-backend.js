@@ -142,11 +142,11 @@ const resolvers = {
     addAuthor: async (root, args) => {
       const author = new Author({ ...args });
       try {
-        await author.save();
+        return author.save();
       } catch (e) {
+        console.log(e);
         throw new UserInputError(e.message, { invalidArgs: args });
       }
-      return author;
     },
     addBook: async (root, args) => {
       // check whether there's an author
@@ -163,10 +163,7 @@ const resolvers = {
       // add new book
       const book = new Book({ ...args, author: author });
       try {
-        const result = await book.save();
-        console.log(result);
-        return result;
-        // return book.save();
+        return book.save();
       } catch (error) {
         throw new UserInputError(error.message, { invalidArgs: args });
       }
