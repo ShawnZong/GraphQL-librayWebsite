@@ -133,6 +133,11 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  Author: {
+    bookCount: async (root) => {
+      return Book.countDocuments({ author: root.id });
+    },
+  },
   Mutation: {
     addAuthor: async (root, args) => {
       const author = new Author({ ...args });
@@ -166,34 +171,34 @@ const resolvers = {
         throw new UserInputError(error.message, { invalidArgs: args });
       }
     },
-    editAuthor: (root, args) => {
-      authors = authors.map((tmp) =>
-        tmp.name === args.name ? { ...tmp, born: args.setBornTo } : tmp
-      );
-      author = authors.find((tmp) => tmp.name === args.name);
-
-      return author;
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name });
+      author.born = args.setBornTo;
+      try {
+        return author.save();
+      } catch (e) {
+        throw new UserInputError(e.message, { invalidArgs: args });
+      }
     },
   },
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: (root, args) => {
+    allBooks: async (root, args) => {
       if (args.author) {
-        return books.filter((book) => book.author === args.author);
+        const authorInDB = await Author.findOne({ name: args.author });
+        if (!authorInDB) {
+          throw new UserInputError("no such author", { invalidArgs: args });
+        }
+        return Book.find({ author: authorInDB._id }).populate("author");
       } else if (args.genre) {
-        return books.filter((book) => book.genres.includes(args.genre));
+        return Book.find({ genres: { $in: args.genre } }).populate("author");
       }
-      return books;
+
+      return Book.find({}).populate("author");
     },
     allAuthors: () => {
-      return authors.map((author) => {
-        let bookCount = 0;
-        books.forEach((book) => {
-          if (book.author === author.name) bookCount++;
-        });
-        return { ...author, bookCount };
-      });
+      return Author.find({});
     },
   },
 };
