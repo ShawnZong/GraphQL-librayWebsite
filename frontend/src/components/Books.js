@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Apollo
 import { ALL_BOOKS } from "../queries";
 import { useQuery } from "@apollo/client";
 
+const NavGenres = ({ setFilterGenre }) => {
+  return (
+    <div>
+      <button onClick={() => setFilterGenre("")}>all genres</button>
+      <button onClick={() => setFilterGenre("test")}>test</button>
+      <button onClick={() => setFilterGenre("test1")}>test1</button>
+    </div>
+  );
+};
+
 const Books = (props) => {
-  const result = useQuery(ALL_BOOKS);
+  const [filterGenre, setFilterGenre] = useState("");
+  const result = useQuery(ALL_BOOKS, { variables: { genre: filterGenre } });
 
   if (!props.show) {
     return null;
@@ -16,11 +27,26 @@ const Books = (props) => {
   }
 
   const books = result.data.allBooks;
-
+  // if (filterGenre) {
+  //   return (
+  //     <div>
+  //       <h2>books</h2>
+  //       <NavGenres setFilterGenre={setFilterGenre} />
+  //       <p>
+  //         in genre <b>{filterGenre}</b>
+  //       </p>
+  //     </div>
+  //   );
+  // }
   return (
     <div>
       <h2>books</h2>
-
+      {filterGenre ? (
+        <p>
+          in genre <b>{filterGenre}</b>
+        </p>
+      ) : null}
+      <NavGenres setFilterGenre={setFilterGenre} />
       <table>
         <tbody>
           <tr>
