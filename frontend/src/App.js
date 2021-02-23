@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 // components
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import Login from "./components/Login";
+import RecommendBooks from "./components/RecommendBooks";
 
 // apollo
 import { useApolloClient } from "@apollo/client";
 
 const App = () => {
-  const [page, setPage] = useState("authors");
+  const [page, setPage] = useState("recommend");
   const [token, setToken] = useState(localStorage.getItem("currentUser"));
   const client = useApolloClient();
 
@@ -41,6 +42,7 @@ const App = () => {
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         <button onClick={() => setPage("add")}>add book</button>
+        <button onClick={() => setPage("recommend")}>recommend</button>
         <button onClick={logout}>logout</button>
       </div>
 
@@ -49,6 +51,8 @@ const App = () => {
       <Books show={page === "books"} />
 
       <NewBook show={page === "add"} />
+
+      <RecommendBooks show={page === "recommend"} />
     </div>
   );
 };
