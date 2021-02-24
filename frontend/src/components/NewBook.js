@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 // Apollo
-import { ADD_BOOK } from "../queries";
-import { useMutation } from "@apollo/client";
+import { ADD_BOOK, BOOK_ADDED } from "../queries";
+import { useMutation, useSubscription } from "@apollo/client";
 
 const NewBook = (props) => {
   const [title, setTitle] = useState("");
@@ -10,6 +10,13 @@ const NewBook = (props) => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      window.alert(`${subscriptionData.data.bookAdded.title} added`);
+      // console.log(subscriptionData);
+    },
+  });
 
   const [addBook, { client }] = useMutation(ADD_BOOK, {
     // refetchQueries: [
@@ -36,6 +43,7 @@ const NewBook = (props) => {
         genres,
       },
     });
+
     console.log("add book...");
 
     setTitle("");

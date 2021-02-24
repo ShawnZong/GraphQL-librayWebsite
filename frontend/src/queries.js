@@ -1,5 +1,22 @@
 import { gql } from "@apollo/client";
 
+// subscription
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+      published
+      author {
+        name
+        born
+        bookCount
+      }
+      genres
+      id
+    }
+  }
+`;
+
 // user related
 export const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
