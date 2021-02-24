@@ -172,11 +172,11 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-  Author: {
-    bookCount: async (root) => {
-      return Book.countDocuments({ author: root.id });
-    },
-  },
+  // Author: {
+  //   bookCount: async (root) => {
+  //     return Book.countDocuments({ author: root.id });
+  //   },
+  // },
   Subscription: {
     bookAdded: {
       subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"]),
@@ -234,14 +234,25 @@ const resolvers = {
 
       // check whether there's an author
       let author = await Author.findOne({ name: args.author });
-      if (!author) {
-        author = new Author({ name: args.author });
-        try {
-          await author.save();
-        } catch (e) {
-          throw new UserInputError(e.message, { invalidArgs: args });
+
+      try {
+        if (!author) {
+          author = new Author({ name: args.author });
         }
+        // console.log(author);
+        author.bookCount = author.bookCount ? author.bookCount + 1 : 1;
+        await author.save();
+      } catch (e) {
+        throw new UserInputError(e.message, { invalidArgs: args });
       }
+      // if (!author) {
+      //   author = new Author({ name: args.author, bookCount: 1 });
+      //   try {
+      //     await author.save();
+      //   } catch (e) {
+      //     throw new UserInputError(e.message, { invalidArgs: args });
+      //   }
+      // }
 
       // add new book
       const book = new Book({ ...args, author: author });
