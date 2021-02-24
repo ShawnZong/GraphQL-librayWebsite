@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 // Apollo
-import { ADD_BOOK, BOOK_ADDED } from "../queries";
+import { ADD_BOOK, BOOK_ADDED, ALL_BOOKS } from "../queries";
 import { useMutation, useSubscription } from "@apollo/client";
 
 const NewBook = (props) => {
@@ -11,21 +11,54 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
 
+  const updateCacheWith = (addedBook) => {
+    const includeIn = (cache, book) => {
+      cache.map((tmp) => tmp.id).includes(book.id);
+    };
+
+    let dataInStore = props.client.readQuery({
+      query: ALL_BOOKS,
+      variables: { genre: "" },
+    });
+    if (!includeIn(dataInStore.allBooks, addedBook)) {
+      props.client.writeQuery({
+        query: ALL_BOOKS,
+        variables: { genre: "" },
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) },
+      });
+    }
+
+    dataInStore = props.client.readQuery({
+      query: ALL_BOOKS,
+      variables: { genre: "test1" },
+    });
+    if (!includeIn(dataInStore.allBooks, addedBook)) {
+      props.client.writeQuery({
+        query: ALL_BOOKS,
+        variables: { genre: "test1" },
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) },
+      });
+    }
+  };
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      window.alert(`${subscriptionData.data.bookAdded.title} added`);
+      const addedBook = subscriptionData.data.bookAdded.title;
+      window.alert(`${addedBook} added`);
+      // props.client.resetStore();
+      updateCacheWith(addedBook);
       // console.log(subscriptionData);
     },
   });
 
-  const [addBook, { client }] = useMutation(ADD_BOOK, {
+  const [addBook] = useMutation(ADD_BOOK, {
     // refetchQueries: [
     //   { query: ALL_AUTHORS },
     //   { query: ALL_BOOKS, variables: { genre: "" } },
     // ],
-    update(cache, result) {
-      client.resetStore();
-    },
+    // update(cache, result) {
+    //   // client.resetStore();
+    // },
     onError: (error) => console.log(error),
   });
 
