@@ -4,8 +4,10 @@ const {
   gql,
   UserInputError,
   AuthenticationError,
+  PubSub,
 } = require("apollo-server");
 const { v1: uuid } = require("uuid");
+const pubsub = new PubSub();
 
 // mongoose
 const config = require("./utils/config");
@@ -164,12 +166,20 @@ const typeDefs = gql`
 
     editAuthor(name: String!, setBornTo: Int): Author
   }
+  type Subscription {
+    bookAdded: Book!
+  }
 `;
 
 const resolvers = {
   Author: {
     bookCount: async (root) => {
       return Book.countDocuments({ author: root.id });
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"]),
     },
   },
   Mutation: {
@@ -236,7 +246,13 @@ const resolvers = {
       // add new book
       const book = new Book({ ...args, author: author });
       try {
-        return book.save();
+        // save data into database
+        const bookResult = await book.save();
+
+        // publish subscriptions
+        pubsub.publish("BOOK_ADDED", { bookAdded: bookResult });
+
+        return bookResult;
       } catch (error) {
         throw new UserInputError(error.message, { invalidArgs: args });
       }
@@ -294,6 +310,7 @@ const server = new ApolloServer({
   },
 });
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`);
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`);
 });
